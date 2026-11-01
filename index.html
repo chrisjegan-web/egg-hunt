@@ -469,7 +469,15 @@ html.phone #modalCard .sum-a { display: grid; gap: 6px; grid-area: a; align-cont
 html.phone #modalCard .sum-b { display: grid; gap: 8px; grid-area: b; align-content: start; min-height: 0; overflow-y: auto; }
 html.phone #modalCard .sum-c { display: grid; gap: 8px; grid-area: c; align-content: end; }
 html.phone #modalCard h2 { font-size: 22px; }
-html.phone #modalCard .big-amber { font-size: 28px; }
+html.phone #modalCard .big-amber { font-size: 26px; }
+html.phone #modalCard .best-line { margin: 0; }
+/* the drawer/sheet: the Buy button stays in reach at the bottom while the bone card scrolls */
+html.phone #nodeCard > div:last-child { position: sticky; bottom: -8px; z-index: 1; margin: 0 -13px -13px; padding: 10px 13px 13px; background: var(--panel); border-radius: 0 0 14px 14px; box-shadow: 0 -8px 16px rgba(0,0,0,0.3); }
+@media (max-height: 330px) {
+  html.phone #modalCard .sum-a .eyebrow { display: none; }
+  html.phone #modalCard h2 { font-size: 19px; }
+  html.phone #modalCard .big-amber { font-size: 22px; }
+}
 html.phone #modalCard .btn { min-height: 46px; }
 
 /* "Turn your phone" card */
@@ -484,6 +492,37 @@ html.phone #modalCard .btn { min-height: 46px; }
 @keyframes turnUp { 0%, 30% { transform: rotate(90deg); } 60%, 100% { transform: rotate(0); } }
 @media (prefers-reduced-motion: reduce) { .turn svg { animation: none; } }
 .ph-tip { font-size: 13px; padding: 8px 10px; border-radius: 10px; background: rgba(111,184,255,0.1); }
+
+/* Camp with the phone on its side: a rail on the left (sound, tabs, era, Start digging), the skeleton fills the rest,
+   and panels open as a drawer from the right edge. The upright camp above still works if the phone is held upright. */
+.ph-railtop { display: none; }
+html.phone .top .icon-btn { white-space: nowrap; }
+html.phone .top:has(#shardPill:not([hidden])) .brand h1 { display: none; }   /* upright: room for the shard pill */
+html.phone.land #app:has(#camp:not(.digging)) { grid-template-rows: minmax(0, 1fr); }
+html.phone.land #app:has(#camp:not(.digging)) .top { display: none; }
+html.phone.land #camp:not(.digging) .camp-grid { grid-template-columns: 224px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); grid-template-areas: "side tree"; }
+html.phone.land #camp:not(.digging) #side { height: 100%; min-height: 0; overflow-y: auto; scrollbar-width: none; gap: 6px; }
+html.phone.land #camp:not(.digging) #side::-webkit-scrollbar { display: none; }
+html.phone.land #camp:not(.digging) .ph-railtop { display: flex; order: 0; align-items: center; justify-content: space-between; gap: 6px; flex: none; }
+html.phone.land .ph-railtop .pill { padding: 6px 9px 6px 7px; font-size: 16px; }
+html.phone.land .ph-railtop .pill.shard { padding: 6px 8px 6px 6px; font-size: 14px; gap: 4px; }
+html.phone.land .ph-railtop .icon-btn { min-height: 34px; padding: 5px 9px; white-space: nowrap; margin-left: auto; }
+html.phone.land #camp:not(.digging) #side .tabs { order: 1; flex: none; grid-auto-flow: row; grid-template-columns: 1fr 1fr; }
+html.phone.land #camp:not(.digging) #side .tabs button { padding: 9px 4px; font-size: 14.5px; }
+html.phone.land #camp:not(.digging) #side #launch { order: 2; margin-top: auto; flex: none; padding: 7px; gap: 6px; }
+html.phone.land #launch .layers { gap: 4px; }
+html.phone.land #launch .layer-btn { padding: 4px 5px; min-height: 42px; }
+html.phone.land #launch .layer-btn b { font-size: 13px; }
+html.phone.land #launch .layer-btn span { font-size: 10px; }
+html.phone.land #launch .btn.go { font-size: 19px; padding: 10px 12px; }
+html.phone.land #camp:not(.digging) #colL { position: fixed; left: auto; bottom: max(8px, env(safe-area-inset-bottom, 0px)); top: max(8px, env(safe-area-inset-top, 0px)); right: max(10px, env(safe-area-inset-right, 0px));
+  width: min(350px, 46vw); max-height: none; z-index: 30; border-radius: 14px; box-shadow: -14px 0 40px rgba(0,0,0,0.6); }
+html.phone.land #camp:not(.digging) #side.open ~ .tree-box #treeWrap::after { content: ""; flex: none; width: min(350px, 46vw); }   /* room to scroll a bone out from under the drawer */
+html.phone.land #camp:not(.digging) .ph-branches button { min-height: 36px; padding: 0 11px; font-size: 13.5px; }
+html.phone.land #camp:not(.digging) .ph-branches { padding: 6px; }
+html.phone.land #camp:not(.digging) .wallet { display: none; }   /* the amber is on the rail instead */
+html.phone.land #camp:not(.digging) .tree-title { display: none; }
+html.phone.land #camp:not(.digging) .tree-box:has(#tree.far) .ph-hint { bottom: auto; top: 54px; }
 </style>
 <script>
 // Phones get their own layout (see "Phone layout" in the styles). ?phone forces it, ?pc turns it off, for testing.
@@ -526,6 +565,7 @@ html.phone #modalCard .btn { min-height: 46px; }
   <section id="camp">
     <div class="camp-grid">
       <aside class="side" id="side" data-tab="bone">
+        <div class="ph-railtop"><span class="pill amber" title="Amber to spend"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1l6 5-2.5 8h-7L2 6z" fill="#f6a623" stroke="#b86f05"/></svg><span id="phAmber">0</span></span><span class="pill shard" id="phShards" hidden title="Meteor shards"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#a88be0"/></svg><span id="phShardTxt">0</span></span><button class="icon-btn" id="phSound" type="button">Sound: on</button></div>
         <div class="tabs" role="tablist" aria-label="Camp panels">
           <button type="button" role="tab" data-tab="bone">Bone</button>
           <button type="button" role="tab" data-tab="guide">Guide</button>
@@ -1695,6 +1735,7 @@ function renderWallet() {
   $('#walletAmber').textContent = fmt(S.amber);
   $('#walletShardBox').hidden = !(S.shards > 0 || S.shardsTotal > 0);
   $('#walletShards').textContent = S.shards;
+  $('#phAmber').textContent = fmt(S.amber); $('#phShards').hidden = !(S.shards > 0 || S.shardsTotal > 0); $('#phShardTxt').textContent = S.shards;
   const n = NODES.filter(canBuy).length;
   $('#walletCan').textContent = n ? `You can buy ${n} bone${n === 1 ? '' : 's'} now (pulsing)` : '';
 }
@@ -1706,9 +1747,9 @@ function renderCamp() {
   renderWallet();
   $('#shardPill').hidden = !S.shards;
   $('#shardTxt').textContent = S.shards;
-  $('#soundBtn').textContent = 'Sound: ' + (S.muted ? 'off' : 'on');
+  $('#soundBtn').textContent = $('#phSound').textContent = 'Sound: ' + (S.muted ? 'off' : 'on');
   $('#meteorTab').classList.toggle('dot', L('jurassic') > 0 && pendingShards() >= 1);
-  renderNotice(); renderTree();
+  renderNotice(); renderTree(); renderGoal();
   if (PHONE) { const nc = $('#noticeCard'), key = nc.hidden ? '' : nc.textContent.slice(0, 80); if (key && key !== PH.notice) openSheet('bone'); PH.notice = key; }
   requestAnimationFrame(markScrollers); renderNodeCard(); renderLayers(); renderGuide(); renderStats(); renderBadgeCard(); renderPrestige(); renderRoyal();
 }
@@ -1736,7 +1777,13 @@ function zoomBranch(b) {
   Z.z = z; Z.auto = false; sizeTree();
   const s = $('#tree').getBoundingClientRect(), r = w.getBoundingClientRect();
   w.scrollLeft += s.left + cx * z - (r.left + r.width / 2);
-  w.scrollTop += s.top + (cy - TY) * z - (r.top + (r.height + 100) / 2);   // the branch buttons and wallet cover the top
+  w.scrollTop += s.top + (cy - TY) * z - (r.top + (r.height + (isLand() ? 48 : 100)) / 2);   // the branch buttons (and upright, the wallet) cover the top
+}
+function revealSel() {
+  const el = document.querySelector(`.node[data-id="${sel}"]`), w = $('#treeWrap'); if (!el) return;
+  const n = el.getBoundingClientRect(), r = w.getBoundingClientRect(), dl = $('#colL').getBoundingClientRect().left;
+  const right = Math.min(r.right, dl - 8), cx = n.left + n.width / 2;
+  if (cx > right - 30 || cx < r.left + 30) w.scrollBy({ left: cx - (r.left + right) / 2, behavior: 'smooth' });
 }
 function treeView() { if (PHONE && PHB) zoomBranch(PHB); else fitTree(); }
 // Phone overview: the bones are too small to tap, so a tap anywhere zooms into the branch nearest the finger.
@@ -1789,7 +1836,7 @@ $('#guideCard').addEventListener('keydown', e => { if ((e.key === 'Enter' || e.k
 $('#tree').addEventListener('click', e => {
   if (PHONE && Z.z < 0.66) return;   // the overview tap is handled on the whole skeleton box, below
   const g = e.target.closest('.node'); if (!g) return;
-  sel = g.dataset.id; renderTree(); renderNodeCard(); setTab('bone'); openSheet();
+  sel = g.dataset.id; renderTree(); renderNodeCard(); setTab('bone'); openSheet(); if (PHONE && isLand()) requestAnimationFrame(revealSel);
   const again = document.querySelector(`.node[data-id="${sel}"]`); if (again) again.focus({ preventScroll: true });
 });
 $('#tree').addEventListener('keydown', e => {
@@ -1802,7 +1849,8 @@ $('#tree').addEventListener('keydown', e => {
   }
 });
 $('#layers').addEventListener('click', e => { const b = e.target.closest('.layer-btn'); if (!b || b.disabled) return; S.layer = +b.dataset.layer; save(); renderLayers(); renderGuide(); });
-$('#soundBtn').onclick = () => { S.muted = !S.muted; save(); $('#soundBtn').textContent = 'Sound: ' + (S.muted ? 'off' : 'on'); };
+$('#soundBtn').onclick = () => { S.muted = !S.muted; save(); $('#soundBtn').textContent = $('#phSound').textContent = 'Sound: ' + (S.muted ? 'off' : 'on'); };
+$('#phSound').onclick = () => $('#soundBtn').click();
 (() => {
   // Backup codes. Backup files hold the same code as text, so a file and a pasted code are interchangeable.
   const code = () => 'EGGHUNT1:' + btoa(unescape(encodeURIComponent(JSON.stringify(S))));
@@ -1982,10 +2030,11 @@ function sizeField(force) {
   if (PHONE && R && !force && !isLand()) return;   // turned upright mid-dig: it's paused, so keep the field as it was
   const field = $('#field'), w = field.clientWidth;
   let h;
-  if (FIT.matches || PHONE) { field.style.height = ''; h = Math.max(240, field.clientHeight); }
+  if (PHONE) { field.style.height = ''; h = Math.max(120, field.clientHeight); }
+  else if (FIT.matches) { field.style.height = ''; h = Math.max(240, field.clientHeight); }
   else { h = Math.round(Math.max(320, Math.min(w * 0.62, window.innerHeight * 0.68))); field.style.height = h + 'px'; }
   // Phones fire resize when the address bar slides; don't reshuffle the quarry unless the size really changed.
-  const k = PHONE ? 1.3 : 1;
+  const k = PHONE ? Math.min(1.3, Math.max(1, h / 230)) : 1;   // phones: up to 1.3× bigger, less when Safari's bars leave a short field
   if (!force && w / k === W && h / k === H) return;
   dpr = Math.min(2, window.devicePixelRatio || 1);
   K = k; W = w / k; H = h / k;
@@ -3533,8 +3582,8 @@ function showSummary() {
       <div><div class="big-amber">+${fmt(R.amber)}</div><p class="muted">amber this dig</p></div>
       <div><div class="big-amber rate">${fmt(rate * 60)}</div><p class="muted">amber a minute</p></div>
     </div>
-    <p class="best-line ${rate > prevBest + 1e-9 ? 'new' : ''}">${rate > prevBest + 1e-9 ? (prevBest > 0 ? `New best this loop! Up from ${fmt(prevBest * 60)} a minute` : 'Your first rate this loop. Beat it next dig!') : (prevBest > 0 ? `Best this loop: ${fmt(prevBest * 60)} a minute · ${Math.round(rate / prevBest * 100)}% of your best` : 'Crack some eggs to set your rate')}</p>
     </div><div class="sum-b">
+    <p class="best-line ${rate > prevBest + 1e-9 ? 'new' : ''}">${rate > prevBest + 1e-9 ? (prevBest > 0 ? `New best this loop! Up from ${fmt(prevBest * 60)} a minute` : 'Your first rate this loop. Beat it next dig!') : (prevBest > 0 ? `Best this loop: ${fmt(prevBest * 60)} a minute · ${Math.round(rate / prevBest * 100)}% of your best` : 'Crack some eggs to set your rate')}</p>
     ${rows ? `<div class="tally">${rows}</div>` : '<p class="muted">No eggs cracked. Click right on top of them.</p>'}
     ${badgeHTML}
     ${R.erupted ? `<p class="muted" style="color:#ff9b5e">The volcano erupted${R.eruptHatched ? `: you caught ${R.eruptCaught || 0} of the ${R.eruptHatched} babies it hatched` : ''}.</p>` : ''}
@@ -3591,12 +3640,13 @@ function orient() {
   const land = isLand(); HTML.classList.toggle('land', land);
   if (PH.pending && land) { PH.pending = false; beginRun(); }
   const dig = !$('#dig').hidden, pk = $('#camp').classList.contains('peek');
-  const mode = PH.pending ? 'start' : dig ? (pk || land ? null : 'dig') : land ? 'camp' : null;
+  const mode = PH.pending ? 'start' : dig && !pk && !land ? 'dig' : null;
   if (R && dig && !pk && !R.summarised) {
     if (mode) { cancelAnimationFrame(raf); ptr.down = false; ptr.in = false; PH.paused = true; }
     else if (PH.paused) { PH.paused = false; sizeField(); last = performance.now(); cancelAnimationFrame(raf); raf = requestAnimationFrame(loop); }
   }
-  if (!dig && !land && PHB) requestAnimationFrame(() => zoomBranch(PHB));   // keep the branch in view after turning
+  if (!dig && land !== PH.land) requestAnimationFrame(() => { if (PHB) zoomBranch(PHB); else fitTree(); markScrollers(); });   // re-fit the skeleton after turning
+  PH.land = land;
   const sum = !!(R && R.summarised), key = mode + (sum ? 's' : '');
   if (key === PH.mode) return; PH.mode = key;
   const t = $('#turn'); t.hidden = !mode; t.classList.toggle('up', mode === 'camp');
@@ -3614,6 +3664,8 @@ $('#peekBtn').onclick = () => peek(true);
 $('#takeOverBtn').onclick = takeOver;
 $('#backToDig').onclick = () => peek(false);
 window.addEventListener('resize', () => { if (R && !$('#dig').hidden) sizeField(); });
+// Phones: Safari can change the field's height (rotating, bars sliding) without a window resize, so watch the field itself.
+if (PHONE && window.ResizeObserver) new ResizeObserver(() => { if (R && !$('#dig').hidden && !R.summarised) sizeField(); }).observe($('#field'));
 setInterval(() => { if (S) save(); }, 5000);
 // The incubator earns every second while you're at camp.
 setInterval(() => {
